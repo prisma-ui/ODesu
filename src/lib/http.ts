@@ -1,6 +1,15 @@
-const TARGET_BASE_URL = (process.env.TARGET_BASE_URL || "https://otakudesu.blog").replace(/\/+$/, "");
-const CF_PROXY_URL = process.env.CF_PROXY_URL || "";
-const REQUEST_TIMEOUT_MS = parseInt(process.env.REQUEST_TIMEOUT_MS || "20000", 10);
+const penv: Record<string, string | undefined> =
+  typeof process !== "undefined" && process.env ? process.env : {};
+let TARGET_BASE_URL = (penv.TARGET_BASE_URL || "https://otakudesu.blog").replace(/\/+$/, "");
+let CF_PROXY_URL = penv.CF_PROXY_URL || "";
+let REQUEST_TIMEOUT_MS = parseInt(penv.REQUEST_TIMEOUT_MS || "20000", 10);
+
+/** Cloudflare Workers: apply bindings/vars from the fetch handler's env. */
+export function setEnv(env: Record<string, unknown>) {
+  if (env.TARGET_BASE_URL) TARGET_BASE_URL = String(env.TARGET_BASE_URL).replace(/\/+$/, "");
+  if (env.CF_PROXY_URL) CF_PROXY_URL = String(env.CF_PROXY_URL);
+  if (env.REQUEST_TIMEOUT_MS) REQUEST_TIMEOUT_MS = parseInt(String(env.REQUEST_TIMEOUT_MS), 10) || 20000;
+}
 
 const BROWSER_HEADERS: Record<string, string> = {
   "User-Agent":
