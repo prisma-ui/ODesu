@@ -1,6 +1,6 @@
 use crate::parsing::*;
 use crate::types::{AnimeDetail, EpisodeLink, GenreLink, RecommendationItem};
-use scraper::{Html, Selector};
+use scraper::{ElementRef, Html, Selector};
 
 lazy_static::lazy_static! {
     static ref TITLE_SELECTOR: Selector = Selector::parse(".jdlrx h1").unwrap();
@@ -22,6 +22,7 @@ pub fn parse_anime_detail(html: &str) -> AnimeDetail {
 
     // Title
     let title = find_text(&root, &TITLE_SELECTOR)
+        .unwrap_or_default()
         .replace("Subtitle Indonesia", "")
         .trim()
         .to_string();
@@ -60,7 +61,7 @@ pub fn parse_anime_detail(html: &str) -> AnimeDetail {
     }
 
     // Synopsis
-    let synopsis = find_text_optional(&root, &SINOPSIS_SELECTOR);
+    let synopsis = find_text(&root, &SINOPSIS_SELECTOR);
 
     // Episode list and batch
     let mut episode_list = Vec::new();
