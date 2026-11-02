@@ -1,2 +1,0 @@
-Invalid workflow file: .github/workflows/ci.yml#L1
-(Line: 76, Col: 9): Unrecognized named-value: 'secrets'. Located at position 67 within expression: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.FLY_API_TOKEN != '', (Line: 93, Col: 9): Unrecognized named-value: 'secrets'. Located at position 67 within expression: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.HF_TOKEN != '' && secrets.HF_SPACE_ID != ''
