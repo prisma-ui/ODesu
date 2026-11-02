@@ -1,43 +1,52 @@
-# ── Stage 1: deps ──────────────────────────────────────────────────────────────
-FROM node:20-alpine AS deps
+# Multi-stage build for minimal production image
+# Build stage
+FROM rust:1.83-slim AS builder
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
+# Copy Cargo.toml and Cargo.lock first for better caching
+COPY Cargo.toml Cargo.lock ./
 
-# ── Stage 2: builder ───────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+# Create dummy source to cache dependencies
+RUN mkdir src && echo "fn main() {}" > src/main.rs && cargo build --release && rm -rf src
+
+# Copy actual source
+COPY src ./src
+COPY Config.toml.example ./Config.toml
+
+# Build release binary
+RUN cargo build --release
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Copy binary from builder
+COPY --from=builder /app/target/release/otakudesu-api /usr/local/bin/otakudesu-api
 
-# Build-time env (not secret — just needed so Next.js can resolve any
-# NEXT_PUBLIC_ vars; real runtime vars are injected by Render at startup)
-ENV NEXT_TELEMETRY_DISABLED=1 \
-    NODE_ENV=production
+# Copy config template
+COPY Config.toml.example ./Config.toml
 
-RUN npm run build
+# Create non-root user
+RUN useradd -r -s /bin/false -u 1001 appuser && chown -R appuser:appuser /app
+USER appuser
 
-# ── Stage 3: runner ────────────────────────────────────────────────────────────
-FROM node:20-alpine AS runner
-WORKDIR /app
+# Port (Hugging Face Spaces requires 7860, Fly.io uses PORT env var)
+ENV PORT=7860
+EXPOSE 7860
 
-ENV NODE_ENV=production \
-    NEXT_TELEMETRY_DISABLED=1 \
-    PORT=3000 \
-    HOSTNAME=0.0.0.0
-
-# Non-root user for security
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser  --system --uid 1001 nextjs
-
-# Standalone output only needs these two paths (no /public dir in this project)
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static    ./.next/static
-
-USER nextjs
-
-EXPOSE 3000
-
-CMD ["node", "server.js"]
+# Run
+CMD ["otakudesu-api"]

@@ -1,2 +1,0 @@
-NVIDIA_NIM_API_KEY="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"
-MODEL="nvidia_nim/nvidia/nemotron-3-ultra-550b-a55b"

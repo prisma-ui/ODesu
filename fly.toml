@@ -1,0 +1,42 @@
+# Fly.io configuration for Otakudesu API
+# Run: fly launch --copy-config --no-deploy
+# Then: fly deploy
+
+app = "otakudesu-api"
+primary_region = "sin"  # Singapore - close to Indonesia target site
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Required: Target site base URL
+  OTAKUDESU_TARGET_BASE_URL = "https://otakudesu.blog"
+  # Optional: Cloudflare Worker proxy URL for bypassing bot detection
+  # OTAKUDESU_CF_PROXY_URL = "https://your-worker.workers.dev/?url="
+  # Optional: Request timeout (ms)
+  # OTAKUDESU_REQUEST_TIMEOUT_MS = "20000"
+  # Optional: Log level
+  # OTAKUDESU_LOG_LEVEL = "info"
+
+[http_service]
+  internal_port = 7860
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "10s"
+    grace_period = "10s"
+    method = "get"
+    path = "/api/ping"
+
+[metrics]
+  port = 9091
+  path = "/metrics"
+
+# Uncomment for persistent volumes if needed
+# [mounts]
+#   source = "otakudesu_data"
+#   destination = "/data"

@@ -1,6 +1,27 @@
+# Rust
+/target
+Cargo.lock
+
+# Node.js (original project)
 node_modules
 .next
 .env
 .env.local
 .vercel
 *.log
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (copy from example)
+Config.toml
+
+# Test fixtures (if large)
+tests/fixtures/*.html

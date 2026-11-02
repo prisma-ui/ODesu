@@ -1,0 +1,59 @@
+[package]
+name = "otakudesu-api"
+version = "1.0.0"
+edition = "2021"
+description = "Otakudesu scraper API in Rust (axum)"
+license = "MIT"
+
+[workspace]
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["tracing"] }
+axum-extra = { version = "0.9", features = ["cookie"] }
+tokio = { version = "1", features = ["full", "macros", "rt-multi-thread"] }
+tower = { version = "0.4", features = ["timeout", "util"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "timeout", "classify"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json", "cookies", "gzip", "brotli", "rustls-tls", "stream"] }
+url = "2.5"
+
+# HTML parsing
+scraper = "0.19"
+lol_html = "0.8"  # faster streaming parser alternative
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_with = "6.6"  # for custom serialization
+
+# OpenAPI / Swagger
+utoipa = { version = "5", features = ["axum_extras", "chrono"] }
+utoipa-swagger-ui = "7"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Config
+figment = { version = "0.10", features = ["toml", "env", "serde"] }
+once_cell = "1.19"
+
+# Utilities
+base64 = { version = "0.22", features = ["std"] }
+percent-encoding = "2.3"
+html-escape = "0.2"
+regex = "1.10"
+lazy_static = "1.4"
+
+# Date/time (for potential future use)
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+insta = { version = "1.34", features = ["json", "yaml", "csv", "ron", "glob-testing"] }
+wiremock = "0.6"
+tokio-test = "0.4"
+pretty_assertions = "1.4"

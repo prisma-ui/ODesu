@@ -1,0 +1,22 @@
+# Otakudesu API Configuration
+# Copy to Config.toml and adjust as needed
+# Environment variables with prefix OTAKUDESU_ take precedence (e.g., OTAKUDESU_TARGET_BASE_URL)
+
+# Base URL of the target site
+target_base_url = "https://otakudesu.blog"
+
+# Cloudflare Worker forward-proxy prefix (optional)
+# e.g., "https://your-worker.workers.dev/?url="
+cf_proxy_url = ""
+
+# Request timeout in milliseconds
+request_timeout_ms = 20000
+
+# Server bind address
+bind_addr = "0.0.0.0"
+
+# Server port (Hugging Face Spaces sets PORT=7860 automatically)
+port = 7860
+
+# Log level (trace, debug, info, warn, error)
+log_level = "info"
