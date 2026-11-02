@@ -85,3 +85,36 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  deploy-hf-space:
+    name: Deploy to Hugging Face Space
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.HF_TOKEN != '' && secrets.HF_SPACE_ID != ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy to HF Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE_ID: ${{ secrets.HF_SPACE_ID }}
+        run: |
+          # Clone HF Space repo
+          git clone https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE_ID} hf-space
+          cd hf-space
+
+          # Copy project files (exclude .git, node_modules, target)
+          rsync -av --exclude='.git' --exclude='node_modules' --exclude='target' --exclude='.github' ../ ./
+
+          # Commit and push
+          git add -A
+          git commit -m "Auto-deploy from GitHub Actions: ${GITHUB_SHA::8}" || echo "No changes"
+          git push origin main
