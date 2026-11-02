@@ -32,6 +32,9 @@ jobs:
         with:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: Auto-format
+        run: cargo fmt --all
+
       - name: Check formatting
         run: cargo fmt --all -- --check
 
