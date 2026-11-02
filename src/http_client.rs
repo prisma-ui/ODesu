@@ -195,7 +195,7 @@ mod tests {
             .await;
 
         // Override config for test
-        let client = ClientBuilder::new()
+        let _client = ClientBuilder::new()
             .default_headers(browser_headers())
             .cookie_provider(Arc::new(Jar::default()))
             .build()

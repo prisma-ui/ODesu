@@ -20,7 +20,7 @@ pub fn parse_batch(html: &str) -> BatchDetail {
 
     // Title
     let title = find_text(&root, &TITLE_SELECTOR)
-        .replace("[BATCH] Subtitle Indonesia", "")
+        .unwrap_or_default()
         .replace("[BATCH] Subtitle Indonesia", "")
         .trim()
         .to_string();

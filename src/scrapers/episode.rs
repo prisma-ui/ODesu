@@ -25,7 +25,7 @@ pub fn parse_episode(html: &str) -> EpisodeDetail {
     let root = Html::parse_document(html);
 
     // Title
-    let title = find_text(&root, &TITLE_SELECTOR);
+    let title = find_text(&root, &TITLE_SELECTOR).unwrap_or_default();
 
     // Stream URL
     let stream_url = find_attr(&root, &STREAM_IFRAME_SELECTOR, "src");

@@ -68,7 +68,7 @@ pub fn parse_genre_detail(html: &str) -> GenreDetailResponse {
         })
         .collect();
 
-    let genre_title = find_text_optional(&root, &GENRE_PAGE_TITLE_SELECTOR).unwrap_or_default();
+    let genre_title = find_text(&root, &GENRE_PAGE_TITLE_SELECTOR).unwrap_or_default();
 
     GenreDetailResponse {
         genre_title,
