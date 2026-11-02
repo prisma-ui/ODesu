@@ -1,5 +1,6 @@
 use scraper::{ElementRef, Html, Node, Selector};
 use std::borrow::Cow;
+use ego_tree::NodeRef;
 
 /// Extract the last non-empty path segment from a URL.
 /// Mirrors Python's slug_from_url().
@@ -96,21 +97,21 @@ pub fn parse_infos_br(
         None => return (info, genres),
     };
 
-    let is_br = |node: &ego_tree::NodeRef<Node>| {
+    let is_br = |node: &NodeRef<Node>| {
         matches!(node.value(), Node::Element(el) if el.name() == "br")
     };
-    let is_tag = |node: &ego_tree::NodeRef<Node>, name: &str| {
+    let is_tag = |node: &NodeRef<Node>, name: &str| {
         matches!(node.value(), Node::Element(el) if el.name() == name)
     };
 
-    let mut genre_b_node: Option<ego_tree::NodeRef<Node>> = None;
+    let mut genre_b_node: Option<NodeRef<Node>> = None;
 
     for b_el in container.select(&Selector::parse("b").unwrap()) {
         let label = clean_text(Some(&b_el.text().collect::<String>())).to_lowercase();
 
         if label.contains("genre") {
-            // Store the NodeRef for the genre <b> element
-            genre_b_node = Some(b_el.as_node().clone());
+            // Store the NodeRef for the genre <b> element (deref ElementRef to get NodeRef)
+            genre_b_node = Some((*b_el).clone());
             continue;
         }
 
