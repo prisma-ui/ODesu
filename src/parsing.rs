@@ -1,6 +1,5 @@
 use scraper::{ElementRef, Html, Node, Selector};
 use std::borrow::Cow;
-use ego_tree::NodeRef;
 
 /// Extract the last non-empty path segment from a URL.
 /// Mirrors Python's slug_from_url().
@@ -97,21 +96,21 @@ pub fn parse_infos_br(
         None => return (info, genres),
     };
 
-    let is_br = |node: &NodeRef<Node>| {
+    let is_br = |node: &ego_tree::NodeRef<Node>| {
         matches!(node.value(), Node::Element(el) if el.name() == "br")
     };
-    let is_tag = |node: &NodeRef<Node>, name: &str| {
+    let is_tag = |node: &ego_tree::NodeRef<Node>, name: &str| {
         matches!(node.value(), Node::Element(el) if el.name() == name)
     };
 
-    let mut genre_b_node: Option<NodeRef<Node>> = None;
+    let mut genre_b_node: Option<ego_tree::NodeRef<Node>> = None;
 
     for b_el in container.select(&Selector::parse("b").unwrap()) {
         let label = clean_text(Some(&b_el.text().collect::<String>())).to_lowercase();
 
         if label.contains("genre") {
             // Store the NodeRef for the genre <b> element
-            genre_b_node = Some(b_el.value().node().clone());
+            genre_b_node = Some(b_el.as_node().clone());
             continue;
         }
 
@@ -124,7 +123,12 @@ pub fn parse_infos_br(
             }
             match n.value() {
                 Node::Text(text) => value_parts.push(text.to_string()),
-                Node::Element(el) => value_parts.push(el.text().collect::<String>()),
+                Node::Element(_) => {
+                    // Wrap the NodeRef as ElementRef to get text
+                    if let Some(el) = ElementRef::wrap(n) {
+                        value_parts.push(el.text().collect::<String>());
+                    }
+                }
                 _ => {}
             }
             node = n.next_sibling();
@@ -145,9 +149,9 @@ pub fn parse_infos_br(
                 break;
             }
             if is_tag(&n, "a") {
-                if let Node::Element(el) = n.value() {
+                if let Some(el) = ElementRef::wrap(n) {
                     let name = clean_text(Some(&el.text().collect::<String>()));
-                    let slug = slug_from_url(el.attr("href"));
+                    let slug = slug_from_url(el.value().attr("href"));
                     if !name.is_empty() {
                         genres.push(GenreLink { name, slug });
                     }
