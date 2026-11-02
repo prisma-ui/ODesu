@@ -34,6 +34,23 @@ updates:
       - "github-actions"
     commit-message:
       prefix: "chore(ci):"
+    # Ignore breaking major versions
+    ignore:
+      # actions/checkout v5+ requires Node 20, v7+ has breaking changes
+      - dependency-name: "actions/checkout"
+        versions: ["5.x", "6.x", "7.x"]
+      # docker/setup-buildx-action v4+ has breaking changes
+      - dependency-name: "docker/setup-buildx-action"
+        versions: ["4.x"]
+      # docker/build-push-action v6+ has breaking cache syntax, v7+ more breaking
+      - dependency-name: "docker/build-push-action"
+        versions: ["6.x", "7.x"]
+      # docker/login-action v3+ has breaking changes
+      - dependency-name: "docker/login-action"
+        versions: ["3.x"]
+      # docker/metadata-action v5+ has breaking changes
+      - dependency-name: "docker/metadata-action"
+        versions: ["5.x"]
 
   # Dockerfile base images
   - package-ecosystem: "docker"
@@ -47,3 +64,9 @@ updates:
       - "docker"
     commit-message:
       prefix: "chore(docker):"
+    # Ignore major version updates for base images
+    ignore:
+      - dependency-name: "debian"
+        versions: ["13.x", "14.x"]
+      - dependency-name: "rust"
+        versions: ["1.84.x", "1.85.x"]
