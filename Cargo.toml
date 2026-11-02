@@ -23,7 +23,7 @@ url = "2.5"
 
 # HTML parsing
 scraper = "0.19"
-lol_html = "0.8"  # faster streaming parser alternative
+lol_html = "0.9"  # faster streaming parser alternative
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
