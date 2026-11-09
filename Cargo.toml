@@ -32,7 +32,7 @@ serde_with = "3"  # for custom serialization
 
 # OpenAPI / Swagger
 utoipa = { version = "5", features = ["axum_extras", "chrono"] }
-utoipa-swagger-ui = "7"
+utoipa-swagger-ui = "10"
 
 # Error handling
 thiserror = "1.0"
