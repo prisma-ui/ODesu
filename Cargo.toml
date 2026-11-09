@@ -18,7 +18,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
 
 # HTTP client
-reqwest = { version = "0.12", features = ["json", "cookies", "gzip", "brotli", "rustls-tls", "stream"] }
+reqwest = { version = "0.13", features = ["json", "cookies", "gzip", "brotli", "rustls-tls", "stream"] }
 url = "2.5"
 
 # HTML parsing
